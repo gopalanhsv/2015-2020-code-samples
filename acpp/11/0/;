@@ -1,0 +1,106 @@
+#ifndef _VEC_H_
+#define _VEC_H_
+
+// System headers
+#include <cstddefs>
+#include <memory>
+
+// Local includes
+
+// Using declarations
+
+// Typedefs
+
+template<typename T>
+class Vec {
+public:
+    // Interface
+
+    // Typedefs
+    typedef T* iterator;
+    typedef const T* const_iterator;
+    typedef size_t size_type;
+    typedef T value_type;
+    typedef T& reference;
+    typedef const T& const_reference;
+    typedef std::ptrdiff_t difference_type;
+
+    // Constructors
+    Vec() { create(); }
+    explicit Vec(size_type n, const_reference val = T()) { create(n, val); }
+    // Copy constructor
+    Vec(const Vec& v) { create(v.begin(), v.end()); };
+
+    // Assignment operator
+    Vec& operator=(const Vec&);
+
+    // Destructor
+    ~Vec() { uncreate() };
+
+    // Iterators
+    iterator begin() { return data; };
+    const_iterator begin() const { return data; };
+    iterator end() { return avail; };
+    const_iterator end() const { return avail; };
+
+    // Subscript operator
+    T& operator[](size_type i) { return data[i]; }
+    const T& operator[](size_type i) const { return data[i]; }
+
+    // Push back
+    void push_back(const T& v) {
+        // Array is full, need to alloc more space
+        if (avail == limit) {
+            grow();
+        }
+        unchecked_append(v);
+    }
+
+    // Returns the number of elements in Vec
+    size_type size() { return avail - data; }
+
+    bool empty() { return !(avail - data); };
+
+private:
+
+    // Implementation
+    // Vector implemented as an array of objects
+    // first element in Vec
+    iterator* data;
+    // (one beyond) the last constructed element in Vec
+    // (or the first available element)
+    iterator* avail;
+    // (one beyond) the allocated memory in Vec
+    iterator* limit;
+
+    // Facilities for managing memory occupied by underlying array
+
+    // Allocator object for managing the memory
+    allocator<T> alloc;
+
+    // Support functions for constructors and assignment operator
+    // Allocate and initialize the underlying array
+    void create();
+    void create(size_type n, const_reference val);
+    void create(const_iterator b, const_iterator e);
+
+    // Support functions for destructor and assignment operator
+    // Destroy the elements in array and free the allocated memory
+    void uncreate();
+
+    // Support functions for appending an object to vec, i.e push_back
+    void grow();
+    void unchecked_append();
+
+};
+
+
+
+
+
+
+
+
+
+
+#endif /* _VEC_H_ */
